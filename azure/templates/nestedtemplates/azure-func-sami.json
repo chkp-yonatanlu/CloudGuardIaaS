@@ -207,8 +207,8 @@
             "location": "[parameters('location')]",
             "properties": {
                 "Application_Type": "web",
-                "Request_Source": "IbizaWebAppExtensionCreate",
-                "WorkspaceResourceId": "\"/subscriptions/9c3f4dac-efbc-4533-acb3-7963594e6a67/resourceGroups/yonatanlu-verify7-3/providers/Microsoft.MachineLearningServices/workspaces/yonatanlu-workspace\""
+                "Request_Source": "IbizaWebAppExtensionCreate"
+				"WorkspaceResourceId": "/subscriptions/9c3f4dac-efbc-4533-acb3-7963594e6a67/resourceGroups/yonatanlu-verify7-3/providers/Microsoft.MachineLearningServices/workspaces/yonatanlu-workspace"
             }
         }
     ]
