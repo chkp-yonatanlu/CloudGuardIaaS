@@ -9,6 +9,12 @@
                 "description": "The name of the azure function."
             }
         },
+		"workspaceResourceId": {
+            "type": "string",
+            "metadata": {
+            "description": "Log Analytics workspace ID to associate with your Application Insights resource."
+        }
+        },
         "appName": {
             "type": "string",
             "defaultValue": "[resourceGroup().name]",
@@ -209,7 +215,7 @@
             "properties": {
                 "Application_Type": "web",
                 "Request_Source": "IbizaWebAppExtensionCreate",
-				"WorkspaceResourceId": "/subscriptions/9c3f4dac-efbc-4533-acb3-7963594e6a67/resourcegroups/yonatanlu-verify7-workspace/providers/microsoft.operationalinsights/workspaces/workspace"
+				"WorkspaceResourceId": "[parameters('workspaceResourceId')]"
             }
         }
     ]
