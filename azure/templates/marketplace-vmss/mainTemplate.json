@@ -9,11 +9,11 @@
         "description": "Subscription ID."
       }
     },
-	"workspaceResourceId": {
-            "type": "string",
+	"workspaceName": {
+			"type": "string",
             "metadata": {
-            "description": "Log Analytics workspace ID to associate with your Application Insights resource."
-        }
+                "description": "workspace name"
+            }
     },
     "location": {
       "type": "string",
@@ -830,8 +830,8 @@
           "vmssName": {
             "value": "[parameters('vmName')]"
           },
-		  "workspaceResourceId": {
-		  "value": "[parameters('workspaceResourceId')]"
+		  "workspaceName": {
+		  "value": "[parameters('workspaceName')]"
 		  }
         }
       }
