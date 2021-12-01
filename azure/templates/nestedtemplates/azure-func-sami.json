@@ -9,11 +9,11 @@
                 "description": "The name of the azure function."
             }
         },
-		"workspaceResourceId": {
-            "type": "string",
+		"workspaceName": {
+			"type": "string",
             "metadata": {
-            "description": "Log Analytics workspace ID to associate with your Application Insights resource."
-        }
+                "description": "workspace name"
+            }
         },
         "appName": {
             "type": "string",
@@ -73,8 +73,26 @@
         "applicationInsightsName": "[parameters('appName')]",
         "Reader": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
         "functionAppId": "[resourceId('Microsoft.Web/sites', parameters('appName'))]"
+		"workspaceId" : "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
     },
     "resources": [
+		{
+          "type": "Microsoft.OperationalInsights/workspaces",
+          "name": "[parameters('workspaceName')]",
+          "apiVersion": "2021-06-01",
+          "location": "[parameters('location')]",
+          "properties": {
+              "sku": {
+                  "name": "[parameters('sku')]"
+              },
+              "retentionInDays": "[parameters('retentionInDays')]",
+              "features": {
+                  "searchVersion": 1,
+                  "legacy": 0,
+                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+              }
+          }
+        },
         {
             "apiVersion": "2021-04-01-preview",
             "type": "Microsoft.Authorization/roleAssignments",
@@ -215,7 +233,7 @@
             "properties": {
                 "Application_Type": "web",
                 "Request_Source": "IbizaWebAppExtensionCreate",
-				"WorkspaceResourceId": "[parameters('workspaceResourceId')]"
+				"WorkspaceResourceId": "[variables('workspaceId')]"
             }
         }
     ]
