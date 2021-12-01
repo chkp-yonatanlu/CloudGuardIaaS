@@ -82,13 +82,10 @@
           "apiVersion": "2021-06-01",
           "location": "[parameters('location')]",
           "properties": {
-              "sku": {
-                  "name": "[parameters('sku')]"
-              },
               "features": {
                   "searchVersion": 1,
                   "legacy": 0,
-                  "enableLogAccessUsingOnlyResourcePermissions": "[parameters('resourcePermissions')]"
+                  "enableLogAccessUsingOnlyResourcePermissions": "true"
               }
           }
         },
