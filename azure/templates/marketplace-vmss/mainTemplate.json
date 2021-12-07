@@ -9,12 +9,6 @@
         "description": "Subscription ID."
       }
     },
-	"workspaceName": {
-			"type": "string",
-            "metadata": {
-                "description": "workspace name"
-            }
-    },
     "location": {
       "type": "string",
       "metadata": {
@@ -829,10 +823,7 @@
           },
           "vmssName": {
             "value": "[parameters('vmName')]"
-          },
-		  "workspaceName": {
-		  "value": "[parameters('workspaceName')]"
-		  }
+          }
         }
       }
     },

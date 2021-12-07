@@ -11,13 +11,22 @@ resource "random_string" "random_string" {
   keepers = {}
 }
 data "google_compute_network" "external_network" {
-  name = var.network[0]
+  name = var.network_name[0]
 }
 resource "random_string" "random_sic_key" {
   length = 12
   special = false
 }
+module "network_and_subnet" {
+  source = "../common/network-and-subnet"
 
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "single"
+  network_cidr = var.network_cidr
+  private_ip_google_access = true
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.network_name
+}
 resource "google_compute_firewall" "ICMP_firewall_rules" {
   count = local.ICMP_traffic_condition
   name = "${var.prefix}-icmp-${random_string.random_string.result}"
@@ -77,7 +86,93 @@ resource "google_compute_firewall" "ESP_firewall_rules" {
   target_tags = [
     "checkpoint-${replace(replace(lower(var.installationType)," ","-"),"(standalone)","standalone")}"]
 }
+module "internal_network1_and_subnet" {
+  source = "../common/network-and-subnet"
 
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network1"
+  network_cidr = var.internal_network1_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network1_name
+}
+
+module "internal_network2_and_subnet" {
+  count = var.numAdditionalNICs < 2 ? 0 : 1
+  source = "../common/network-and-subnet"
+
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network2"
+  network_cidr = var.internal_network2_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network2_name
+}
+
+module "internal_network3_and_subnet" {
+  count = var.numAdditionalNICs < 3 ? 0 : 1
+  source = "../common/network-and-subnet"
+
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network3"
+  network_cidr = var.internal_network3_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network3_name
+}
+
+module "internal_network4_and_subnet" {
+  count = var.numAdditionalNICs < 4 ? 0 : 1
+  source = "../common/network-and-subnet"
+
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network4"
+  network_cidr = var.internal_network4_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network4_name
+}
+
+module "internal_network5_and_subnet" {
+  count = var.numAdditionalNICs < 5 ? 0 : 1
+  source = "../common/network-and-subnet"
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network5"
+  network_cidr = var.internal_network5_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network5_name
+}
+module "internal_network6_and_subnet" {
+  count = var.numAdditionalNICs < 6 ? 0 : 1
+  source = "../common/network-and-subnet"
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network6"
+  network_cidr = var.internal_network6_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network6_name
+}
+module "internal_network7_and_subnet" {
+  count = var.numAdditionalNICs < 7 ? 0 : 1
+  source = "../common/network-and-subnet"
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network7"
+  network_cidr = var.internal_network7_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network7_name
+}
+module "internal_network8_and_subnet" {
+  count = var.numAdditionalNICs < 8 ? 0 : 1
+  source = "../common/network-and-subnet"
+  prefix = "${var.prefix}-${random_string.random_string.result}"
+  type = "internal-network8"
+  network_cidr = var.internal_network8_cidr
+  private_ip_google_access = false
+  region =  join("-", concat(split("-", var.zone)[0],split("-", var.zone)[0]))
+  network_name = var.internal_network7_name
+}
 resource "google_compute_instance" "gateway" {
   name = "${var.prefix}-${random_string.random_string.result}"
   description = "Check Point Security ${replace(var.installationType,"(Standalone)","--")==var.installationType?split(" ",var.installationType)[0]:" Gateway and Management"}"
@@ -98,78 +193,77 @@ resource "google_compute_instance" "gateway" {
     }
   }
   network_interface {
-    network = var.network[0]
-    subnetwork = var.subnetwork[0]
+    network = var.network_name[0]
+    subnetwork = var.subnetwork_name[0]
     dynamic "access_config" {
       for_each = var.externalIP == "None"? []:[1]
       content {
         nat_ip = var.externalIP=="static" ? google_compute_address.static.address : null
       }
     }
-
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs >= 1 ? [
       1] : []
     content {
-      network = var.internal_network1_network[0]
-      subnetwork = var.internal_network1_subnetwork[0]
+      network = local.create_internal_network1_condition? module.internal_network1_and_subnet.new_created_network_link : [var.internal_network1_name]
+      subnetwork =local.create_internal_network1_condition? module.internal_network1_and_subnet.new_created_subnet_link : [var.internal_network1_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs >= 2 ? [
       1] : []
     content {
-      network = var.internal_network2_network[0]
-      subnetwork = var.internal_network2_subnetwork[0]
+      network = local.create_internal_network2_condition? module.internal_network2_and_subnet.new_created_network_link : [var.internal_network2_name]
+      subnetwork =local.create_internal_network2_condition? module.internal_network2_and_subnet.new_created_subnet_link : [var.internal_network2_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs >= 3 ? [
-      1] : []
+      3] : []
     content {
-      network = var.internal_network3_network[0]
-      subnetwork = var.internal_network3_subnetwork[0]
+      network = local.create_internal_network3_condition? module.internal_network3_and_subnet.new_created_network_link : [var.internal_network3_name]
+      subnetwork =local.create_internal_network3_condition? module.internal_network3_and_subnet.new_created_subnet_link : [var.internal_network3_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs >= 4 ? [
-      1] : []
+      4] : []
     content {
-      network = var.internal_network4_network[0]
-      subnetwork = var.internal_network4_subnetwork[0]
+      network = local.create_internal_network4_condition? module.internal_network4_and_subnet.new_created_network_link : [var.internal_network4_name]
+      subnetwork =local.create_internal_network4_condition? module.internal_network4_and_subnet.new_created_subnet_link : [var.internal_network4_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs >= 5 ? [
-      1] : []
+      5] : []
     content {
-      network = var.internal_network5_network[0]
-      subnetwork = var.internal_network5_subnetwork[0]
+      network = local.create_internal_network5_condition? module.internal_network5_and_subnet.new_created_network_link : [var.internal_network5_name]
+      subnetwork =local.create_internal_network5_condition? module.internal_network5_and_subnet.new_created_subnet_link : [var.internal_network5_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs == 6 ? [
-      1] : []
+      6] : []
     content {
-      network = var.internal_network6_network[0]
-      subnetwork = var.internal_network6_subnetwork[0]
+      network = local.create_internal_network6_condition? module.internal_network6_and_subnet.new_created_network_link : [var.internal_network6_name]
+      subnetwork =local.create_internal_network6_condition? module.internal_network6_and_subnet.new_created_subnet_link : [var.internal_network6_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs == 7 ? [
-      1] : []
+      7] : []
     content {
-      network = var.internal_network7_network[0]
-      subnetwork = var.internal_network7_subnetwork[0]
+      network = local.create_internal_network7_condition? module.internal_network7_and_subnet.new_created_network_link : [var.internal_network7_name]
+      subnetwork =local.create_internal_network7_condition? module.internal_network7_and_subnet.new_created_subnet_link : [var.internal_network7_subnetwork_name]
     }
   }
   dynamic "network_interface" {
     for_each = var.numAdditionalNICs == 8 ? [
-      1] : []
+      8] : []
     content {
-      network = var.internal_network8_network[0]
-      subnetwork = var.internal_network8_subnetwork[0]
+      network = local.create_internal_network8_condition? module.internal_network8_and_subnet.new_created_network_link : [var.internal_network8_name]
+      subnetwork =local.create_internal_network8_condition? module.internal_network8_and_subnet.new_created_subnet_link : [var.internal_network8_subnetwork_name]
     }
   }
 

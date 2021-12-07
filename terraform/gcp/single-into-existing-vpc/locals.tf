@@ -32,4 +32,12 @@ locals {
   UDP_traffic_condition = length(var.network_udpSourceRanges	) == 0 ? 0 : 1
   SCTP_traffic_condition = length(var.network_sctpSourceRanges) == 0 ? 0 : 1
   ESP_traffic_condition = length(var.network_espSourceRanges) == 0 ? 0 : 1
+  create_internal_network1_condition =  module.internal_network1_and_subnet.create_network_condition
+  create_internal_network2_condition =  module.internal_network2_and_subnet.create_network_condition
+  create_internal_network3_condition =  module.internal_network3_and_subnet.create_network_condition
+  create_internal_network4_condition =  module.internal_network4_and_subnet.create_network_condition
+  create_internal_network5_condition =  module.internal_network5_and_subnet.create_network_condition
+  create_internal_network6_condition =  module.internal_network6_and_subnet.create_network_condition
+  create_internal_network7_condition =  module.internal_network7_and_subnet.create_network_condition
+  create_internal_network8_condition =  module.internal_network8_and_subnet.create_network_condition
 }

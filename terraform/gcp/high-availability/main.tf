@@ -125,12 +125,11 @@ module "mgmt_ESP_firewall_rules" {
 
 module "internal_network1_and_subnet" {
   source = "../common/network-and-subnet"
-
   prefix = "${var.prefix}-${random_string.random_string.result}"
   type = "internal-network1"
   network_cidr = var.internal_network1_cidr
   private_ip_google_access = false
-  region = var.region
+  region = join("-", concat(split("-", var.region)[0],split("-", var.region)[0]))
   network_name = var.internal_network1_name
 }
 

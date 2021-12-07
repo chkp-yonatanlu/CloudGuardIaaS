@@ -9,12 +9,6 @@
                 "description": "The name of the azure function."
             }
         },
-		"workspaceName": {
-			"type": "string",
-            "metadata": {
-                "description": "workspace name"
-            }
-        },
         "appName": {
             "type": "string",
             "defaultValue": "[resourceGroup().name]",
@@ -73,12 +67,13 @@
         "applicationInsightsName": "[parameters('appName')]",
         "Reader": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
         "functionAppId": "[resourceId('Microsoft.Web/sites', parameters('appName'))]",
-		"workspaceId" : "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName'))]"
+        "workspaceName": "[concat('workspace-',parameters('appName'))]",
+		"workspaceId" : "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
     },
     "resources": [
 		{
           "type": "Microsoft.OperationalInsights/workspaces",
-          "name": "[parameters('workspaceName')]",
+          "name": "[variables('workspaceName')]",
           "apiVersion": "2021-06-01",
           "location": "[parameters('location')]",
           "properties": {

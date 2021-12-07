@@ -36,15 +36,20 @@ variable "machine_type" {
   type = string
   default = "n1-standard-4"
 }
-variable "network" {
+variable "network_name" {
   type = list(string)
   description = "The network determines what network traffic the instance can access"
   default = ["default"]
 }
-variable "subnetwork" {
+variable "subnetwork_name" {
   type = list(string)
   description = "Assigns the instance an IPv4 address from the subnetwork’s range. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
   default = ["default"]
+}
+variable "network_cidr" {
+  type = string
+  description = "Cluster external subnet CIDR. If the variable's value is not empty double quotes, a new network will be created. The Cluster public IP will be translated to a private address assigned to the active member in this external network."
+  default = "10.0.0.0/24"
 }
 variable "network_enableTcp" {
   type = bool
@@ -96,7 +101,6 @@ variable "network_sctpSourceRanges" {
   description = "(Optional) Source IP ranges for SCTP traffic - Traffic is only allowed from sources within these IP address ranges. Use CIDR notation when entering ranges. Please leave empty list to unable SCTP traffic."
   default = []
 }
-
 variable "network_enableEsp" {
   type = bool
   description ="Allow ESP traffic from the Internet	"
@@ -167,83 +171,133 @@ variable "externalIP" {
   description = "External IP address type"
   default = "static"
 }
-variable "internal_network1_network" {
-  type = list(string)
-  description = "1st internal network ID in the chosen zone."
-  default = []
+#variable "internal_network1_network" {
+#  type = list(string)
+#  description = "1st internal network ID in the chosen zone."
+#  default = []
+#}
+#variable "internal_network1_subnetwork" {
+#  type = list(string)
+#  description = "1st internal subnet ID in the chosen network."
+#  default = []
+#}
+variable "internal_network1_cidr" {
+  type = string
+  description = "1st internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = "10.0.2.0/24"
 }
-variable "internal_network1_subnetwork" {
+variable "internal_network1_name" {
   type = list(string)
-  description = "1st internal subnet ID in the chosen network."
-  default = []
+  description = "1st internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network1_cidr, this network name will not be used. "
+  default = [""]
 }
-variable "internal_network2_network" {
+variable "internal_network1_subnetwork_name" {
   type = list(string)
-  description = "2nd internal network ID in the chosen zone."
-  default = []
+  description = "1st internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network1_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }
-variable "internal_network2_subnetwork" {
+variable "internal_network2_cidr" {
   type = list(string)
-  description = "2nd internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 2 or and above - 2nd internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
 }
-variable "internal_network3_network" {
+variable "internal_network2_name" {
   type = list(string)
-  description = "3rd internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 2 or and above - 2nd internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network2_cidr, this network name will not be used. "
+  default = [""]
 }
-variable "internal_network3_subnetwork" {
+variable "internal_network2_subnetwork_name" {
   type = list(string)
-  description = "3rd internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 2 or and above - 2nd internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network2_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }
-variable "internal_network4_network" {
+variable "internal_network3_cidr" {
   type = list(string)
-  description = "4th internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 3 or and above - 3rd internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
 }
-variable "internal_network4_subnetwork" {
+variable "internal_network3_name" {
   type = list(string)
-  description = "4th internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 3 or and above - 3rd internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network3_cidr, this network name will not be used. "
+  default = [""]
 }
-variable "internal_network5_network" {
+variable "internal_network3_subnetwork_name" {
   type = list(string)
-  description = "5th internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 3 or and above - 3rd internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network3_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }
-variable "internal_network5_subnetwork" {
+variable "internal_network4_cidr" {
   type = list(string)
-  description = "5th internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 4 or and above - 4th internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
 }
-variable "internal_network6_network" {
+variable "internal_network4_name" {
   type = list(string)
-  description = "6th internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 4 or and above - 4th internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network4_cidr, this network name will not be used. "
+  default = [""]
 }
-variable "internal_network6_subnetwork" {
+variable "internal_network4_subnetwork_name" {
   type = list(string)
-  description = "6th internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 4 or and above - 4th internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network4_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }
-variable "internal_network7_network" {
+variable "internal_network5_cidr" {
   type = list(string)
-  description = "7th internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 5 or and above - 5th internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
 }
-variable "internal_network7_subnetwork" {
+variable "internal_network5_name" {
   type = list(string)
-  description = "7th internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks is 5 or and above - 5th internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network5_cidr, this network name will not be used. "
+  default = [""]
 }
-variable "internal_network8_network" {
+variable "internal_network5_subnetwork_name" {
   type = list(string)
-  description = "8th internal network ID in the chosen zone."
-  default = []
+  description = "Used only if var.num_internal_networks is 5 or and above - 5th internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network5_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }
-variable "internal_network8_subnetwork" {
+variable "internal_network6_cidr" {
   type = list(string)
-  description = "8th internal subnet ID in the chosen network."
-  default = []
+  description = "Used only if var.num_internal_networks equals 6 - 6th internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
+}
+variable "internal_network6_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 6 - 6th internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network6_cidr, this network name will not be used. "
+  default = [""]
+}
+variable "internal_network6_subnetwork_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 6 - 6th internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network6_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
+}
+variable "internal_network7_cidr" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 7 - 7th internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
+}
+variable "internal_network7_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 7 - 7th internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network7_cidr, this network name will not be used. "
+  default = [""]
+}
+variable "internal_network7_subnetwork_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 7 - 7th internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network7_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
+}
+variable "internal_network8_cidr" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 8 - 8th internal subnet CIDR. If the variable's value is not empty double quotes, a new subnet will be created. Assigns the cluster members an IPv4 address in this internal network."
+  default = [""]
+}
+variable "internal_network8_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 8 - 8th internal network ID in the chosen zone. The network determines what network traffic the instance can access. If you have specified a CIDR block at var.internal_network8_cidr, this network name will not be used. "
+  default = [""]
+}
+variable "internal_network8_subnetwork_name" {
+  type = list(string)
+  description = "Used only if var.num_internal_networks equals 8 - 8th internal subnet ID in the chosen network. Assigns the instance an IPv4 address from the subnetwork’s range. If you have specified a CIDR block at var.internal_network8_cidr, this subnetwork will not be used. Instances in different subnetworks can communicate with each other using their internal IPs as long as they belong to the same network."
+  default = [""]
 }

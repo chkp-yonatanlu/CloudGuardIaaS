@@ -16,3 +16,6 @@ output "new_created_subnet_name" {
 output "existing_network_name" {
   value = data.google_compute_network.network_name[*].name
 }
+output "create_network_condition" {
+  value = local.create_network_condition
+}
