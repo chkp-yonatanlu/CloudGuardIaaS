@@ -67,13 +67,12 @@
         "applicationInsightsName": "[parameters('appName')]",
         "Reader": "[concat('/subscriptions/', parameters('subscriptionId'), '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
         "functionAppId": "[resourceId('Microsoft.Web/sites', parameters('appName'))]",
-        "workspaceName": "['Remote-access-workspace']",
 		"workspaceId" : "[resourceId('Microsoft.OperationalInsights/workspaces', concat('workspace-',parameters('appName')))]"
     },
     "resources": [
 		{
           "type": "Microsoft.OperationalInsights/workspaces",
-          "name": "[variables('workspaceName')]",
+          "name": "Remote-access-workspace",
           "apiVersion": "2021-06-01",
           "location": "[parameters('location')]",
           "properties": {
