@@ -73,7 +73,7 @@
     "resources": [
 		{
           "type": "Microsoft.OperationalInsights/workspaces",
-          "name": "Remote-access-log-workspace",
+          "name": "Remote-access-workspace",
           "apiVersion": "2021-06-01",
           "location": "[parameters('location')]",
           "properties": {
